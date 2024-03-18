@@ -11,16 +11,9 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
     public EditText password;
-    public boolean flag1 = true;
-    public boolean flag2 = true;
+    public boolean flag1 = true;                   //флаги чтобы анимация проигралась один раз
+    public boolean flag2 = true;                   //флаги чтобы анимация проигралась один раз
     public boolean flag3 = true;
-    public boolean flag4 = true;
-    public boolean flag5 = true;
-    public boolean flag6 = true;
-    public boolean flag7 = true;
-    public boolean flag8 = true;
-    public boolean flag9 = true;
-    public boolean flag10 = true;
 
     boolean isUpperCase(char ch) {
         return false;
@@ -47,25 +40,25 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void afterTextChanged(Editable s) {
                     String passwordString = password.getText().toString();
-                    boolean Bbukva = false;
-                    for (int i = 0; i < password.length(); i++) {
+                    boolean Bbukva = false;                        //Bbukva - большая буква
+                    for (int i = 0; i < password.length(); i++) {                    //проверка на большую букву
                         if(Character.isUpperCase(passwordString.charAt(i))){
                             Bbukva = true;
                             break;
                         }
                     }
-                    if (password.length() > 7) {         //Следующая проверка
-                        if (Bbukva == true) {
+                    if (password.length() > 7) {         //первая проверка
+                        if (Bbukva == true) {                         //следующая проврека + если задание было неправильным и стало правильным то красный сменится на зеленый
 
                         }
-                        else (Bbukva == false | flag1 = true) {      //вывод нового задания
+                        else (Bbukva == false | flag1 = true) {      //анимация вывода нового задания и отключение чтобы задание еще раз выше не выехало
                             flag1 = false;
                             }
                     }
-                    else if (flag1 == false | password.length()<8){          //оповещение что это задание не выполнено
+                    else if (flag1 == false | password.length()<8){          //оповещение что это задание не выполнено (фон фрагмента с этим заданием станет красным
 
                     }
-                    else {
+                    else {                    // вдруг понадобится
                         return;
                     }
                 }
