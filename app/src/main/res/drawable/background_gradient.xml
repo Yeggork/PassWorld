@@ -4,7 +4,8 @@
         <shape>
             <gradient android:startColor="@color/background_gradient_1"
                       android:centerColor="@color/background_gradient_2"
-                      android:endColor="@color/background_gradient_3"/>
+                      android:endColor="@color/background_gradient_3"
+                      android:centerX="0.6"/>
         </shape>
     </item>
 

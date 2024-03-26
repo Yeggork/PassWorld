@@ -4,7 +4,11 @@
     <color name="white">#FFFFFFFF</color>
     <color name="fon">#EA6565</color>
     <color name="frame">#0082EA</color>
-    <color name="background_gradient_1">#4ECBCC</color>
-    <color name="background_gradient_2">#009DFF</color>
-    <color name="background_gradient_3">#8120F3</color>
+    <color name="background_gradient_1">#00BFFF</color>
+    <color name="background_gradient_2">#007FFF</color>
+    <color name="background_gradient_3">#0047AB</color>
+    <color name="fon_menu_1">#F9A825</color>
+    <color name="fon_menu_2">#DA317F</color>
+    <color name="sdklg">#1B000000</color>
+    <color name="grey_white">#BDACAC</color>
 </resources>

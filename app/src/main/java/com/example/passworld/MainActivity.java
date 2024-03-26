@@ -1,72 +1,60 @@
 package com.example.passworld;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.EditText;
 
 
 public class MainActivity extends AppCompatActivity {
-    public EditText password;
-    public boolean flag1 = true;                   //флаги чтобы анимация проигралась один раз
-    public boolean flag2 = true;                   //флаги чтобы анимация проигралась один раз
-    public boolean flag3 = true;
-
-    boolean isUpperCase(char ch) {
-        return false;
-    }
-
-
+    public Button play;
+    public Button MyPasswords;
+    public Button Description;
+    public Button ButtonExitGame;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        password = findViewById(R.id.editTextPassword);
-        password.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        setContentView(R.layout.menu);
+        play = findViewById(R.id.buttonStartPlay);
+        MyPasswords = findViewById(R.id.buttonDBPasswords);
+        Description = findViewById(R.id.buttonDescription);
+        ButtonExitGame = findViewById(R.id.buttonExit);
 
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    String passwordString = password.getText().toString();
-                    boolean Bbukva = false;                        //Bbukva - большая буква
-                    for (int i = 0; i < password.length(); i++) {                    //проверка на большую букву
-                        if(Character.isUpperCase(passwordString.charAt(i))){
-                            Bbukva = true;
-                            break;
-                        }
-                        else{
-                            Bbukva = false;
-                            break;
-                        }
-                    }
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent Eintent = new Intent(MainActivity.this, Checked.class);
+                startActivities(new Intent[]{Eintent});
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+            }
+        });
 
 
-                    if (password.length() > 7) {         //1 проверка
-                        if (Bbukva == true | flag1 = true) {                         //анимация вывода нового задания и отключение чтобы задание еще раз выше не выехало
-                                flag1 = false;
-                        }
-                        else (Bbukva == true | flag1 = false) {      //2 проврека + если задание было неправильным и стало правильным то красный сменится на зеленый
+        ButtonExitGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
-                    }
-                    else if (password.length()<8 | flag1 == false){          //оповещение что это задание не выполнено (фон фрагмента с этим заданием станет красным
 
-                    }
-                    else {                    // вдруг понадобится
-                        return;
-                    }
-                }
+        Description.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent Cintent = new Intent(MainActivity.this, Description.class);
+                startActivities(new Intent[]{Cintent});
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+            }
         });
     }
 }
