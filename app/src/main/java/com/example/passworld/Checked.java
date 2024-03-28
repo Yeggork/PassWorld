@@ -12,15 +12,29 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class Checked extends AppCompatActivity {
+import java.util.regex.Pattern;
+
+public class Checked extends MainActivity {
     public EditText password;
     public boolean flag1 = true;                   //флаги чтобы анимация проигралась один раз
     public boolean flag2 = true;                   //флаги чтобы анимация проигралась один раз
     public boolean flag3 = true;
+    public boolean flag4 = true;
+    public boolean flag5 = true;
 
     boolean isUpperCase(char ch) {
         return false;
     }
+    boolean CharInPassword = false;
+    boolean IntInPassword = false;
+    boolean RimIntInPassword = false;
+    boolean isDigit(char ch) {
+        return false;
+    }
+    int SumNumberInPassword = 0;
+
+
+    Pattern RimIntPattern = Pattern.compile("^[IVXLCDM]+$");
 
 
     @Override
@@ -56,7 +70,7 @@ public class Checked extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 String passwordString = password.getText().toString();
-                boolean Bbukva = false;                        //Bbukva - большая буква
+                boolean Bbukva = false;
                 for (int i = 0; i < password.length(); i++) {                    //проверка на большую букву
                     if(Character.isUpperCase(passwordString.charAt(i))){
                         Bbukva = true;
@@ -66,22 +80,93 @@ public class Checked extends AppCompatActivity {
                         Bbukva = false;
                         break;
                     }
-                }
-
+                } //проверка на наличие большой буквы
+                for (int i = 0; i < password.length(); i++) {
+                    if (!passwordString.isEmpty()) {
+                        CharInPassword = true;
+                    }                        //проверка на символы
+                    else {
+                        CharInPassword = false;
+                    }
+                } //проверка на символы
+                for (int i = 0; i < password.length(); i++) {
+                    if(Character.isDigit(passwordString.charAt(i))){
+                        IntInPassword = true;
+                        break;
+                    }
+                    else{
+                        IntInPassword = false;
+                        break;
+                    }
+                } //проверка на цифры
+                for (int i = 0; i < password.length(); i++) {
+                    if (RimIntPattern.matcher(passwordString).matches()) {
+                        RimIntInPassword = true;
+                        break;
+                    } else {
+                        RimIntInPassword = false;
+                        break;
+                    }
+                } //проверка на римские цифры
+                for (int i = 0; i < password.length(); i++) {
+                    char DDDDDDDD = passwordString.charAt(i);
+                    if (Character.isDigit(DDDDDDDD)){
+                        int FFFFFF = Character.getNumericValue(DDDDDDDD);
+                        SumNumberInPassword += FFFFFF;
+                    }
+                } //проверка на сумму чисел = 31
 
 
                 if (password.length() > 7) {         //1 проверка
                     if (Bbukva == true & flag1 == true) {                         //анимация вывода нового задания и отключение чтобы задание еще раз выше не выехало
                         flag1 = false;
+                    } else if (Bbukva == true) {                                        //2 проврека + если задание было неправильным и стало правильным то красный сменится на зеленый
+
+                        if (IntInPassword == true & flag2 == true) {
+                            flag2 = false;
+                        } else if (IntInPassword == true) {
+
+                            if (CharInPassword == true & flag3 == true) {
+                                flag3 = false;
+                            } else if (CharInPassword == true) {
+
+                                if (RimIntInPassword == true & flag4 == true){
+                                    flag4 = false;
+                                } else if (RimIntInPassword == true) {
+
+                                    if (SumNumberInPassword == 31 & flag5 == true){
+                                        flag5 = false;
+                                    } else if (SumNumberInPassword == 31){
+
+
+                                    }
+                                    else{
+
+                                    }
+                                }
+                                else{
+
+                                }
+                            }
+                            else {
+
+                            }
+                        }
+                        else {
+
+                        }
                     }
-                    else if(Bbukva == true){                              //2 проврека + если задание было неправильным и стало правильным то красный сменится на зеленый
+                    else {
 
                     }
                 }
-                else {
+                else{
+
                 }
+
             }
         });
     }
 
 }
+
