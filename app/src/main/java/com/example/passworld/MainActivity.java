@@ -4,6 +4,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,7 +19,7 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
     public Button play;
-    public Button MyPasswords;
+    public Button MyPassword;
     public Button Description;
     public Button ButtonExitGame;
 
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.menu);
         play = findViewById(R.id.buttonStartPlay);
-        MyPasswords = findViewById(R.id.buttonDBPasswords);
+        MyPassword = findViewById(R.id.buttonDBPasswords);
         Description = findViewById(R.id.buttonDescription);
         ButtonExitGame = findViewById(R.id.buttonExit);
 
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent Eintent = new Intent(MainActivity.this, Checked.class);
                 startActivities(new Intent[]{Eintent});
+                finish();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
             }
         });
@@ -53,6 +56,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent Cintent = new Intent(MainActivity.this, Description.class);
                 startActivities(new Intent[]{Cintent});
+                finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+            }
+        });
+        MyPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent Lintent = new Intent(MainActivity.this, MyPasswords.class);
+                startActivities(new Intent[]{Lintent});
+                finish();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
             }
         });

@@ -1,5 +1,7 @@
 package com.example.passworld;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -38,16 +40,30 @@ public class Checked extends MainActivity {
 
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        String currentActivity = this.getLocalClassName();
-        Intent Bintent = new Intent(Checked.this, MainActivity.class);
-
-
-        if (currentActivity.equals("Checked")) {
-            startActivities(new Intent[]{Bintent});
-            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
-        }
+    public void onBackPressed() {                  //эту ошибку исправлять не надо
+        String ccurrentActivity = this.getLocalClassName();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Вы уверены, что хотите покинуть текущую игру?");
+        builder.setCancelable(true);
+        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (ccurrentActivity.equals("Checked")) {
+                    Intent Bintent = new Intent(Checked.this,MainActivity.class);
+                    startActivities(new Intent[]{Bintent});
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+                    finish();
+                }
+            }
+        });
+        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
