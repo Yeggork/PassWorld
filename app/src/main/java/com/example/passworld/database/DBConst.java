@@ -6,11 +6,11 @@ public class DBConst {
 
     public static final String PASSWORD_TABLE_NAME = "passwords";
     public static final String PASSWORD_ID = "id";
-    public static final String PASSWORD_TITLE = "password";
+    public static final String PASSWORD_TEXT = "text";
 
     public static final String PASSWORD_CREATE_TABLE = "create table if not exists "
             + PASSWORD_TABLE_NAME+ " ( " + PASSWORD_ID + " integer primary key autoincrement, "+
-            PASSWORD_TITLE +" text ) ";
+            PASSWORD_TEXT +" Text ) ";
 
     public static final String PASSWORD_DELETE_TABLE = "delete table if exists "+ PASSWORD_TABLE_NAME;
 }

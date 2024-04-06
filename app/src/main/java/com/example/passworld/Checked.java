@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Checked extends MainActivity {
@@ -23,6 +24,9 @@ public class Checked extends MainActivity {
     public boolean flag3 = true;
     public boolean flag4 = true;
     public boolean flag5 = true;
+    public boolean flag6 = true;
+    public boolean flag7 = true;
+    public boolean flag8 = true;
 
     boolean isUpperCase(char ch) {
         return false;
@@ -33,7 +37,10 @@ public class Checked extends MainActivity {
     boolean isDigit(char ch) {
         return false;
     }
+    boolean SmilesInPassword = false;
     int SumNumberInPassword = 0;
+    String smiles = "[:;][-']?[(|)DOP]";
+    Pattern patternSmile = Pattern.compile(smiles);
 
 
     Pattern RimIntPattern = Pattern.compile("^[IVXLCDM]+$");
@@ -71,6 +78,7 @@ public class Checked extends MainActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         password = findViewById(R.id.editTextPassword);
+        String passwordString = password.getText().toString();
 
         password.addTextChangedListener(new TextWatcher() {
             @Override
@@ -85,7 +93,6 @@ public class Checked extends MainActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                String passwordString = password.getText().toString();
                 boolean Bbukva = false;
                 for (int i = 0; i < password.length(); i++) {                    //проверка на большую букву
                     if(Character.isUpperCase(passwordString.charAt(i))){
@@ -131,7 +138,13 @@ public class Checked extends MainActivity {
                         SumNumberInPassword += FFFFFF;
                     }
                 } //проверка на сумму чисел = 31
-
+                Matcher smille = patternSmile.matcher(passwordString);
+                if (smille.find()){
+                    SmilesInPassword = true;
+                }
+                else {
+                    SmilesInPassword = false;
+                } //проверка на :) :D :P
 
                 if (password.length() > 7) {         //1 проверка
                     if (Bbukva == true & flag1 == true) {                         //анимация вывода нового задания и отключение чтобы задание еще раз выше не выехало
@@ -152,9 +165,16 @@ public class Checked extends MainActivity {
 
                                     if (SumNumberInPassword == 31 & flag5 == true){
                                         flag5 = false;
-                                    } else if (SumNumberInPassword == 31){
+                                    } else if (SumNumberInPassword == 31) {
 
+                                        if (SmilesInPassword == true & flag6 == true){
+                                            flag6 = false;
+                                        } else if (SmilesInPassword == true) {
 
+                                        }
+                                        else {
+
+                                        }
                                     }
                                     else{
 
