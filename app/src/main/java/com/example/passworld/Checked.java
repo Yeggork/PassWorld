@@ -103,15 +103,15 @@ public class Checked extends MainActivity {
                         Bbukva = false;
                         break;
                     }
-                } //проверка на наличие большой буквы
+                }                                      //проверка на наличие большой буквы
                 for (int i = 0; i < password.length(); i++) {
                     if (!passwordString.isEmpty()) {
                         CharInPassword = true;
-                    }                        //проверка на символы
+                    }                                      //проверка на символы
                     else {
                         CharInPassword = false;
                     }
-                } //проверка на символы
+                }                            //проверка на символы
                 for (int i = 0; i < password.length(); i++) {
                     if(Character.isDigit(passwordString.charAt(i))){
                         IntInPassword = true;
@@ -145,6 +145,8 @@ public class Checked extends MainActivity {
                 else {
                     SmilesInPassword = false;
                 } //проверка на :) :D :P
+
+
 
                 if (password.length() > 7) {         //1 проверка
                     if (Bbukva == true & flag1 == true) {                         //анимация вывода нового задания и отключение чтобы задание еще раз выше не выехало

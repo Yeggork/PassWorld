@@ -9,12 +9,12 @@
 
     <EditText
         android:id="@+id/editTextPassword"
-        android:layout_width="339dp"
-        android:layout_height="205dp"
+        android:layout_width="377dp"
+        android:layout_height="209dp"
         android:layout_marginStart="100dp"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="101dp"
-        android:layout_marginBottom="487dp"
+        android:layout_marginBottom="414dp"
         android:alpha="0.9"
         android:background="@drawable/ramka_password"
         android:ems="10"
@@ -27,15 +27,14 @@
         android:paddingBottom="20dp"
         android:text=""
         android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/actionButtonSavePas"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/actionButtonAddNotes"
+        android:id="@+id/actionButtonSavePas"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="32dp"
