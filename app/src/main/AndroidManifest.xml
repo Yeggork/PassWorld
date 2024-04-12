@@ -21,7 +21,7 @@
             android:name=".Description"
             android:exported="false"/>
         <activity
-            android:name=".MyPasswordsSavePassword"
+            android:name=".MyPasswords"
             android:exported="false"/>
         <activity
             android:name=".MainActivity"
