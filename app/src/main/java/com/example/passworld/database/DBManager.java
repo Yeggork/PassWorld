@@ -28,6 +28,7 @@ public class DBManager {
         while (cursor.moveToNext()){
             Passworddd password = new Passworddd();
             password.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(DBConst.PASSWORD_ID))));
+            password.setIdpas(cursor.getString(cursor.getColumnIndex(DBConst.PASSWORD_IDPAS)));
             password.setTextpassword(cursor.getString(cursor.getColumnIndex(DBConst.PASSWORD_TEXT)));
             passworddds.add(password);
         }
@@ -36,6 +37,7 @@ public class DBManager {
     }
      public void addPassword(Passworddd passworddds){
          ContentValues cv = new ContentValues();
+         cv.put(DBConst.PASSWORD_IDPAS,passworddds.getIdpas());
          cv.put(DBConst.PASSWORD_TEXT,passworddds.getTextpassword());
          db.insert(DBConst.PASSWORD_TABLE_NAME,null,cv);
      }

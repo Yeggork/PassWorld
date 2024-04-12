@@ -9,8 +9,8 @@
 
     <EditText
         android:id="@+id/editTextPassword"
-        android:layout_width="377dp"
-        android:layout_height="209dp"
+        android:layout_width="334dp"
+        android:layout_height="193dp"
         android:layout_marginStart="100dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="101dp"

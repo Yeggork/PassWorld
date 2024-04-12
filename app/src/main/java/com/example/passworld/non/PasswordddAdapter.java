@@ -19,20 +19,16 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
     private final LayoutInflater inflater;
     private List<Passworddd> passworddds;
     private final OnDeleteClickListener onDeleteClickListener;
-    private final OnCopyClickListener onCopyClickListener;
+
 
     public interface OnDeleteClickListener{
         void onDeleteClick(Passworddd password, int position);
     }
-    public interface OnCopyClickListener{
-        void onCopyClick(Passworddd password, int position);
-    }
 
-    public PasswordddAdapter(Context context,List<Passworddd> passworddds, OnDeleteClickListener onDeleteClickListener, OnCopyClickListener onCopyClickListener){
+    public PasswordddAdapter(Context context,List<Passworddd> passworddds, OnDeleteClickListener onDeleteClickListener){
         this.passworddds = passworddds;
         inflater = LayoutInflater.from(context);
         this.onDeleteClickListener = onDeleteClickListener;
-        this.onCopyClickListener = onCopyClickListener;
     }
     @NonNull
     @Override
@@ -44,6 +40,7 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull PasswordddAdapter.ViewHolder holder, int position) {
         Passworddd password = passworddds.get(position);
+        holder.idpas.setText(password.getIdpas());
         holder.textpas.setText(password.getTextpassword());
         holder.delete.setOnClickListener(v -> {
             onDeleteClickListener.onDeleteClick(password,holder.getAdapterPosition());
@@ -59,9 +56,10 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView delete, copy;
-        TextView textpas;
+        TextView textpas, idpas;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
+            idpas = itemView.findViewById(R.id.TextViewNumberPassword);
             textpas = itemView.findViewById(R.id.TextViewPasswordSavedInDataBase);
             delete = itemView.findViewById(R.id.imageViewDeletePassword);
             copy = itemView.findViewById(R.id.imageViewCopyPassword);

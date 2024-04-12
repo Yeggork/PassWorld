@@ -25,7 +25,8 @@ public class Description extends MainActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.description);
         DescriptionPlay = findViewById(R.id.textViewDescriptionPlay);
-        DescriptionPlay.setText("PassWorld - это развлекательная игра, в которой вам надо пройти 20 проверок для создания надежного и качественного пароля.\n");
+        DescriptionPlay.setText("PassWorld - это развлекательная игра, в которой вам надо пройти 20 проверок для создания надежного и качественного пароля.\n" +
+                "\nИдея была взята из популярной игры The Password Game");
 
     }
 }

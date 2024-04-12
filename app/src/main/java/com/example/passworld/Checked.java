@@ -1,26 +1,22 @@
 package com.example.passworld;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Checked extends MainActivity {
     public EditText password;
-    public boolean flag1 = true;                   //флаги чтобы анимация проигралась один раз
-    public boolean flag2 = true;                   //флаги чтобы анимация проигралась один раз
+    public boolean flag1 = true;                   //флаги чтобы появление задания сработало один раз
+    public boolean flag2 = true;                   //флаги чтобы появление задания сработало один раз
     public boolean flag3 = true;
     public boolean flag4 = true;
     public boolean flag5 = true;
@@ -78,7 +74,6 @@ public class Checked extends MainActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         password = findViewById(R.id.editTextPassword);
-        String passwordString = password.getText().toString();
 
         password.addTextChangedListener(new TextWatcher() {
             @Override
@@ -93,6 +88,7 @@ public class Checked extends MainActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                String passwordString = password.getText().toString();
                 boolean Bbukva = false;
                 for (int i = 0; i < password.length(); i++) {                    //проверка на большую букву
                     if(Character.isUpperCase(passwordString.charAt(i))){
@@ -101,7 +97,7 @@ public class Checked extends MainActivity {
                     }
                     else{
                         Bbukva = false;
-                        break;
+
                     }
                 }                                      //проверка на наличие большой буквы
                 for (int i = 0; i < password.length(); i++) {
@@ -119,7 +115,6 @@ public class Checked extends MainActivity {
                     }
                     else{
                         IntInPassword = false;
-                        break;
                     }
                 } //проверка на цифры
                 for (int i = 0; i < password.length(); i++) {
@@ -128,7 +123,7 @@ public class Checked extends MainActivity {
                         break;
                     } else {
                         RimIntInPassword = false;
-                        break;
+
                     }
                 } //проверка на римские цифры
                 for (int i = 0; i < password.length(); i++) {
@@ -149,9 +144,9 @@ public class Checked extends MainActivity {
 
 
                 if (password.length() > 7) {         //1 проверка
-                    if (Bbukva == true & flag1 == true) {                         //анимация вывода нового задания и отключение чтобы задание еще раз выше не выехало
+                    if (Bbukva == true & flag1 == true) {                         //появление задание и отключение того чтобы оно еще раз сработало
                         flag1 = false;
-                    } else if (Bbukva == true) {                                        //2 проврека + если задание было неправильным и стало правильным то красный сменится на зеленый
+                    } else if (Bbukva == true) {                                        //2 проврека + если задание было неправильным и стало правильным то перекраска фона этого задания на зеленый
 
                         if (IntInPassword == true & flag2 == true) {
                             flag2 = false;
@@ -175,31 +170,31 @@ public class Checked extends MainActivity {
 
                                         }
                                         else {
-
+//прекраска фона определенного задания в красный
                                         }
                                     }
                                     else{
-
+//прекраска фона определенного задания в красный
                                     }
                                 }
                                 else{
-
+//прекраска фона определенного задания в красный
                                 }
                             }
                             else {
-
+//прекраска фона определенного задания в красный
                             }
                         }
                         else {
-
+//прекраска фона определенного задания в красный
                         }
                     }
                     else {
-
+//прекраска фона определенного задания в красный
                     }
                 }
                 else{
-
+//прекраска фона определенного задания в красный
                 }
 
             }

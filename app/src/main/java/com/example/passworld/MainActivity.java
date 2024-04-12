@@ -4,17 +4,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.EditText;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -63,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         MyPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent Lintent = new Intent(MainActivity.this, MyPasswords.class);
+                Intent Lintent = new Intent(MainActivity.this, MyPasswordsSavePassword.class);
                 startActivities(new Intent[]{Lintent});
                 finish();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
