@@ -21,8 +21,31 @@ public class DBManager {
         this.context = context;
         dbHelper = new DBHelper(this.context);
     }
+
+    public boolean checkPassword(Passworddd passworddd) {
+        for (Passworddd p : getPasswords()) {
+            if (p.getId() == passworddd.getId()) {
+                return false;
+            }
+        }
+        return true;
+    }
     @SuppressLint("Range")
-    public List<Passworddd> getPassword(){
+    public Passworddd getPassword(Passworddd p){
+        Passworddd password = new Passworddd();
+        Cursor cursor = db.rawQuery("Select * from "+ DBConst.PASSWORD_TABLE_NAME+ " Where " + DBConst.PASSWORD_TEXT + " = " + p.getTextpassword(), null);
+        while (cursor.moveToNext()){
+            password.setId(Integer.parseInt(cursor.getString(cursor.getColumnIndex(DBConst.PASSWORD_ID))));
+            password.setIdpas(cursor.getString(cursor.getColumnIndex(DBConst.PASSWORD_IDPAS)));
+            password.setTextpassword(cursor.getString(cursor.getColumnIndex(DBConst.PASSWORD_TEXT)));
+
+        }
+        cursor.close();
+        return password;
+    }
+
+    @SuppressLint("Range")
+    public List<Passworddd> getPasswords(){
         List<Passworddd> passworddds = new ArrayList<>();
         Cursor cursor = db.rawQuery("Select * from "+ DBConst.PASSWORD_TABLE_NAME,null);
         while (cursor.moveToNext()){
@@ -34,6 +57,14 @@ public class DBManager {
         }
         cursor.close();
         return passworddds;
+    }
+
+
+    public void updatePassword(Passworddd p) {
+        ContentValues cv = new ContentValues();
+        cv.put(DBConst.PASSWORD_TEXT, p.getTextpassword());
+        cv.put(DBConst.PASSWORD_IDPAS, p.getIdpas());
+        db.update(DBConst.PASSWORD_TABLE_NAME, cv, DBConst.PASSWORD_ID + " = " + p.getId(), null);
     }
      public void addPassword(Passworddd passworddds){
          ContentValues cv = new ContentValues();

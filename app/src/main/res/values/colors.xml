@@ -11,4 +11,6 @@
     <color name="fon_menu_2">#DA317F</color>
     <color name="sdklg">#1B000000</color>
     <color name="grey_white">#BDACAC</color>
+    <color name="backgroun_task_visualization_1">#FFB700</color>
+    <color name="backgroun_task_visualization_2">#B5D5C15E</color>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.passworld.non;
 
-public class Passworddd {
+import java.io.Serializable;
+
+public class Passworddd implements Serializable {
 
     private int id;
     private String textpassword;

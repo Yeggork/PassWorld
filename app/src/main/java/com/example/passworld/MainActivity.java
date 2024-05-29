@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.passworld.non.Passworddd;
+
 
 public class MainActivity extends AppCompatActivity {
     public Button play;
@@ -28,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Passworddd p = new Passworddd();
                 Intent Eintent = new Intent(MainActivity.this, Checked.class);
+                Eintent.putExtra(Passworddd.class.getSimpleName(),p);
                 startActivities(new Intent[]{Eintent});
                 finish();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);

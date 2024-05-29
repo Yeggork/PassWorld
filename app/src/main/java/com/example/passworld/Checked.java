@@ -1,59 +1,322 @@
 package com.example.passworld;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
+
+import com.example.passworld.database.DBManager;
+import com.example.passworld.non.Passworddd;
+import com.example.passworld.non.PasswordddAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Checked extends MainActivity {
-    public EditText password;
-    public boolean flag1 = true;                   //флаги чтобы появление задания сработало один раз
-    public boolean flag2 = true;                   //флаги чтобы появление задания сработало один раз
-    public boolean flag3 = true;
-    public boolean flag4 = true;
-    public boolean flag5 = true;
-    public boolean flag6 = true;
-    public boolean flag7 = true;
-    public boolean flag8 = true;
+    private EditText password;
+    private boolean[] flags = new boolean[20]; // Массив для хранения флагов
+    private DBManager dbManager;
+    private TextView tvQuest;
+    private Passworddd passworddd = new Passworddd();
+    String[] question = {"1) Ваш пароль должен состоять как минимум из 8 символов","2) Ваш пароль должен содержать букву в верхнем регистре","3) Ваш пароль должен содержать хотя бы 1 символ","4) Ваш пароль должен содержать цифру",
+    "5) Ваш пароль должен содержать Римскую цифру","6) Сумма цифр вашего пароль должна равняться - 31","7) Ваш пароль должен содержать хотя бы один символьный смайлик","8) Ваш пароль должен иметь хотя бы одну английскую букву",
+    "9) Ваш пароль должен содержать ответ на загадку: \"Кто ходит сидя?\"","10) Для работы приложения требуется включенный вайфай!","11) Ваш пароль должен содержать название символа с кодом 0 из кодировки ASCII",
+    "12) О нет! Ваш пароль поймал вирус! Из-за него каждые 30 секунд - удаляется рандомный символ! Чтобы подтвердить получение данной информации введите кодовое слово \"подтвержаю\"","13) А теперь с осознание того что у тебя в пароле вирус, тебе стоит спокойно отдохнуть (подождите 1 минуту ничего не делая)",
+    "14) Для работы приложения требуется больше заряда...","15) Ответьте (да или нет) на вопрос: Вам более 18 лет?","16) количество символов пароля должно быть кратно 4",
+    "17) Ваш пароль должен содержать текущее время на вашем уствойстве","18) Количество цифр вашего пароля должно быть нечетным","19) Ваш пароль должен содержать 3-ех символьный банковский код любой валюты","20) Пароль слишком большой(((","Поздравляю!!! Вы создали надежный пароль который никто никогда не угадает.Не забудьте сохранить его!"};
 
-    boolean isUpperCase(char ch) {
+    // Логика проверки на заглавную букву
+    private boolean isUpperCase(char ch) {
+        return Character.isUpperCase(ch);
+    }
+
+    // Логика проверки на цифру
+    private boolean isDigit(char ch) {
+        return Character.isDigit(ch);
+    }
+    public static boolean EnglishLetter(String str) {
+        for (char c : str.toCharArray()) {
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) {
+                return true;
+            }
+        }
         return false;
     }
-    boolean CharInPassword = false;
-    boolean IntInPassword = false;
-    boolean RimIntInPassword = false;
-    boolean isDigit(char ch) {
-        return false;
-    }
-    boolean SmilesInPassword = false;
-    int SumNumberInPassword = 0;
-    String smiles = "[:;][-']?[(|)DOP]";
-    Pattern patternSmile = Pattern.compile(smiles);
-
-
-    Pattern RimIntPattern = Pattern.compile("^[IVXLCDM]+$");
-
 
     @Override
-    public void onBackPressed() {                  //эту ошибку исправлять не надо
-        String ccurrentActivity = this.getLocalClassName();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Bundle arguments = getIntent().getExtras();
+
+        if(arguments!=null){
+            passworddd = (Passworddd) arguments.getSerializable(Passworddd.class.getSimpleName());
+        }
+        dbManager = new DBManager(this);
+        dbManager.openDb();
+
+        password = findViewById(R.id.editTextPassword);
+        FloatingActionButton actionButton = findViewById(R.id.actionButtonSavePas);
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(dbManager.checkPassword(passworddd))
+                    dbManager.addPassword(passworddd);
+                else{
+                    dbManager.updatePassword(passworddd);
+                    passworddd = dbManager.getPassword(passworddd);
+                }
+
+               Log.d("ss",dbManager.getPasswords().size()+"");
+            }
+        });
+        tvQuest = findViewById(R.id.QuestionTextView);
+        tvQuest.setText(question[0]);
+        PasswordddAdapter.OnDeleteClickListener onDeleteClickListener = new PasswordddAdapter.OnDeleteClickListener() {
+            @Override
+            public void onDeleteClick(Passworddd password, int position) {
+                dbManager.deletePassword(password);
+            }
+        };
+        password.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                passworddd.setTextpassword(password.getText().toString());
+
+                boolean has8sumbol = false;
+                boolean hasUppercase = false;
+                boolean hasChar = false;
+                boolean hasDigit = false;
+                boolean hasRimInt = false;
+                int sumNumber = 0;
+                boolean hasSmiles = false;
+                boolean hasEnglish = false;
+                boolean hasPuzzle = false;
+                boolean hasWiFi = false;
+                boolean hasASCII = false;
+                boolean hasVIRUS = false;
+                boolean hasSleep = false;
+                boolean hasPersentOfPhone = false;
+                boolean hasQuestion = false;
+                boolean hasSumbolKratno4 = false;
+                boolean hasCurrentTimee = false;
+                boolean hasCharNoChetni = false;
+                boolean hasRUB_EUR = false;
+                boolean hasBigPassword = false;
+                boolean hasUNREAL = false;
+
+                for (int i = 0; i < password.length(); i++) {
+                    // Проверка на 8 символвов
+                    if (passworddd.getTextpassword().length() > 7){
+                        has8sumbol = true;
+                        tvQuest.setText(question[1]);
+                    }
+
+                    // Проверка на заглавную букву
+                    if (isUpperCase(passworddd.getTextpassword().charAt(i))) {
+                        hasUppercase = true;
+                        tvQuest.setText(question[2]);
+                    }
+
+                    // Проверка на цифру
+                    if (isDigit(passworddd.getTextpassword().charAt(i))) {
+                        hasDigit = true;
+                        tvQuest.setText(question[4]);
+                    }
+
+                    if(isChar(passworddd.getTextpassword())) {
+                        hasChar = true;
+                        tvQuest.setText(question[3]);
+                    }
+
+                    // Проверка на римскую цифру
+                    if (Pattern.matches("^[IVXLCDM]+$", passworddd.getTextpassword())) {
+                        hasRimInt = true;
+                        tvQuest.setText(question[5]);
+                    }
+
+                    // Вычисление суммы чисел
+                    if (Character.isDigit(passworddd.getTextpassword().charAt(i))) {
+                        sumNumber += Character.getNumericValue(passworddd.getTextpassword().charAt(i));
+                        tvQuest.setText(question[6]);
+                    }
+
+                    if (EnglishLetter(passworddd.getTextpassword())){
+                        hasEnglish = true;
+                        tvQuest.setText(question[8]);
+                    }
+                    if (passworddd.getTextpassword().length() > 100000000) {
+                        hasUNREAL = true;
+                    }
+                }
+                if(passworddd.getTextpassword().equals(""))
+                    tvQuest.setText(question[0]);
+
+                // Проверка на наличие смайлов
+                Matcher smileMatcher = Pattern.compile("[:;][-']?[(|)DOP]").matcher(passworddd.getTextpassword());
+                hasSmiles = smileMatcher.find();
+                tvQuest.setText(question[7]);
+
+                // Обновление флагов в зависимости от условий пароля
+                updateFlags(has8sumbol, hasUppercase, hasChar, hasDigit, hasRimInt, sumNumber, hasSmiles, hasEnglish, hasPuzzle, hasWiFi, hasASCII, hasVIRUS, hasSleep, hasPersentOfPhone, hasQuestion, hasSumbolKratno4, hasCurrentTimee, hasCharNoChetni, hasRUB_EUR, hasBigPassword, hasUNREAL);
+            }
+        });
+    }
+
+    // Метод для обновления флагов в зависимости от условий пароля
+    private void updateFlags(boolean has8sumbol, boolean hasUppercase, boolean hasChar, boolean hasDigit, boolean hasRimInt, int sumNumber, boolean hasSmiles, boolean hasEnglish, boolean hasPuzzle, boolean hasWiFi, boolean hasASCII, boolean hasVIRUS, boolean hasSleep, boolean hasPersentOfPhone, boolean hasQuestion, boolean hasSumbolKratno4, boolean hasCurrentTimee, boolean hasCharNoChetni, boolean hasRUB_EUR, boolean hasBigPassword, boolean hasUNREAL) {
+        flags[0] = has8sumbol;
+        if(!hasUNREAL)
+            tvQuest.setText(question[20]);
+        if(!hasBigPassword)
+            tvQuest.setText(question[19]);
+        if(!hasRUB_EUR)
+            tvQuest.setText(question[18]);
+        if(!hasCharNoChetni)
+            tvQuest.setText(question[17]);
+        if(!hasCurrentTimee)
+            tvQuest.setText(question[16]);
+        if(!hasSumbolKratno4)
+            tvQuest.setText(question[15]);
+        if(!hasQuestion)
+            tvQuest.setText(question[14]);
+        if(!hasPersentOfPhone)
+            tvQuest.setText(question[13]);
+        if(!hasSleep)
+            tvQuest.setText(question[12]);
+        if(!hasVIRUS)
+            tvQuest.setText(question[11]);
+        if(!hasASCII)
+            tvQuest.setText(question[10]);
+        if(!hasWiFi)
+            tvQuest.setText(question[9]);
+        if(!hasPuzzle)
+            tvQuest.setText(question[8]);
+        if(!hasEnglish)
+            tvQuest.setText(question[7]);
+        if(!hasSmiles)
+            tvQuest.setText(question[6]);
+        if(!(sumNumber == 31))
+            tvQuest.setText(question[5]);
+        if(!hasRimInt)
+            tvQuest.setText(question[4]);
+        if(!hasDigit)
+            tvQuest.setText(question[3]);
+        if(!hasChar)
+            tvQuest.setText(question[2]);
+        if(!hasUppercase)
+            tvQuest.setText(question[1]);
+        if(!has8sumbol)
+            tvQuest.setText(question[0]);
+
+
+        if (has8sumbol) {
+            flags[1] = hasUppercase;
+
+            if (hasUppercase) {
+                flags[2] = hasChar;
+
+                if (hasChar) {
+                    flags[3] = hasDigit;
+
+                    if (hasDigit) {
+                        flags[4] = hasRimInt;
+
+                        if (hasRimInt) {
+                            flags[5] = sumNumber == 31;
+
+                            if (sumNumber == 31) {
+                                flags[6] = hasSmiles;
+
+                                if (hasSmiles) {
+                                    flags[7] = hasEnglish;
+
+                                    if (hasEnglish) {
+                                        flags[8] = hasPuzzle;
+
+                                        if(hasPuzzle) {
+                                            flags[9] = hasWiFi;
+
+                                            if (hasWiFi) {
+                                                flags[10] = hasASCII;
+
+                                                if(hasASCII) {
+                                                    flags[11] = hasVIRUS;
+
+                                                    if(hasVIRUS) {
+                                                        flags[12] = hasSleep;
+
+                                                        if(hasSleep) {
+                                                            flags[13] = hasPersentOfPhone;
+
+                                                            if(hasPersentOfPhone) {
+                                                                flags[14] = hasQuestion;
+
+                                                                if(hasQuestion) {
+                                                                    flags[15] = hasSumbolKratno4;
+
+                                                                    if(hasSumbolKratno4) {
+                                                                        flags[16] = hasCurrentTimee;
+
+                                                                        if(hasCurrentTimee) {
+                                                                            flags[17] = hasCharNoChetni;
+
+                                                                            if(hasCharNoChetni) {
+                                                                                flags[18] = hasRUB_EUR;
+
+                                                                                if(hasRUB_EUR) {
+                                                                                    flags[19] = hasBigPassword;
+
+                                                                                    if(hasBigPassword) {
+                                                                                        flags[20] = hasUNREAL;
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        String currentActivity = this.getLocalClassName();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Вы уверены, что хотите покинуть текущую игру?");
         builder.setCancelable(true);
         builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (ccurrentActivity.equals("Checked")) {
-                    Intent Bintent = new Intent(Checked.this,MainActivity.class);
-                    startActivities(new Intent[]{Bintent});
+                if (currentActivity.equals("Checked")) {
+                    Intent intent = new Intent(Checked.this, MainActivity.class);
+                    startActivities(new Intent[]{intent});
                     overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
                     finish();
                 }
@@ -68,138 +331,8 @@ public class Checked extends MainActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        password = findViewById(R.id.editTextPassword);
-
-        password.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                String passwordString = password.getText().toString();
-                boolean Bbukva = false;
-                for (int i = 0; i < password.length(); i++) {                    //проверка на большую букву
-                    if(Character.isUpperCase(passwordString.charAt(i))){
-                        Bbukva = true;
-                        break;
-                    }
-                    else{
-                        Bbukva = false;
-
-                    }
-                }                                      //проверка на наличие большой буквы
-                for (int i = 0; i < password.length(); i++) {
-                    if (!passwordString.isEmpty()) {
-                        CharInPassword = true;
-                    }                                      //проверка на символы
-                    else {
-                        CharInPassword = false;
-                    }
-                }                            //проверка на символы
-                for (int i = 0; i < password.length(); i++) {
-                    if(Character.isDigit(passwordString.charAt(i))){
-                        IntInPassword = true;
-                        break;
-                    }
-                    else{
-                        IntInPassword = false;
-                    }
-                } //проверка на цифры
-                for (int i = 0; i < password.length(); i++) {
-                    if (RimIntPattern.matcher(passwordString).matches()) {
-                        RimIntInPassword = true;
-                        break;
-                    } else {
-                        RimIntInPassword = false;
-
-                    }
-                } //проверка на римские цифры
-                for (int i = 0; i < password.length(); i++) {
-                    char DDDDDDDD = passwordString.charAt(i);
-                    if (Character.isDigit(DDDDDDDD)){
-                        int FFFFFF = Character.getNumericValue(DDDDDDDD);
-                        SumNumberInPassword += FFFFFF;
-                    }
-                } //проверка на сумму чисел = 31
-                Matcher smille = patternSmile.matcher(passwordString);
-                if (smille.find()){
-                    SmilesInPassword = true;
-                }
-                else {
-                    SmilesInPassword = false;
-                } //проверка на :) :D :P
-
-
-
-                if (password.length() > 7) {         //1 проверка
-                    if (Bbukva == true & flag1 == true) {                         //появление задание и отключение того чтобы оно еще раз сработало
-                        flag1 = false;
-                    } else if (Bbukva == true) {                                        //2 проврека + если задание было неправильным и стало правильным то перекраска фона этого задания на зеленый
-
-                        if (IntInPassword == true & flag2 == true) {
-                            flag2 = false;
-                        } else if (IntInPassword == true) {
-
-                            if (CharInPassword == true & flag3 == true) {
-                                flag3 = false;
-                            } else if (CharInPassword == true) {
-
-                                if (RimIntInPassword == true & flag4 == true){
-                                    flag4 = false;
-                                } else if (RimIntInPassword == true) {
-
-                                    if (SumNumberInPassword == 31 & flag5 == true){
-                                        flag5 = false;
-                                    } else if (SumNumberInPassword == 31) {
-
-                                        if (SmilesInPassword == true & flag6 == true){
-                                            flag6 = false;
-                                        } else if (SmilesInPassword == true) {
-
-                                        }
-                                        else {
-//прекраска фона определенного задания в красный
-                                        }
-                                    }
-                                    else{
-//прекраска фона определенного задания в красный
-                                    }
-                                }
-                                else{
-//прекраска фона определенного задания в красный
-                                }
-                            }
-                            else {
-//прекраска фона определенного задания в красный
-                            }
-                        }
-                        else {
-//прекраска фона определенного задания в красный
-                        }
-                    }
-                    else {
-//прекраска фона определенного задания в красный
-                    }
-                }
-                else{
-//прекраска фона определенного задания в красный
-                }
-
-            }
-        });
+    public static boolean isChar(String str) {
+        String specialCharacters = "[^a-zA-Z0-9]";
+        return str.matches(".*" + specialCharacters + ".*");
     }
-
 }
-

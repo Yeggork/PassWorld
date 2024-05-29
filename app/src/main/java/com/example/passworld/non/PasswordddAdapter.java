@@ -37,6 +37,10 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
         return new ViewHolder(view);
     }
 
+    public void newList(List<Passworddd> password){
+        passworddds = password;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull PasswordddAdapter.ViewHolder holder, int position) {
         Passworddd password = passworddds.get(position);
