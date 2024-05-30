@@ -1,6 +1,7 @@
 package com.example.passworld.non;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 public class Passworddd implements Serializable {
 
@@ -8,7 +9,7 @@ public class Passworddd implements Serializable {
     private String textpassword;
     private String idpas;
 
-    public Passworddd(String textpassword){
+    public Passworddd(String textpassword) {
         this.textpassword = textpassword;
         this.idpas = textpassword;
     }
@@ -41,5 +42,7 @@ public class Passworddd implements Serializable {
         this.idpas = idpas;
     }
 
-
+    public Collection<Object> toLowerCase() {
+        return null;
+    }
 }

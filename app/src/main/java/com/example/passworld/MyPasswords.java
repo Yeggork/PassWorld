@@ -15,6 +15,18 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MyPasswords extends AppCompatActivity {
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        String ZcurrentActivity = this.getLocalClassName();
+        Intent Uintent = new Intent(MyPasswords.this, MainActivity.class);
+        if (ZcurrentActivity.equals("MyPasswords")) {
+            startActivities(new Intent[]{Uintent});
+            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+        }
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

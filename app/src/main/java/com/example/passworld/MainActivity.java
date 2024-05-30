@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent Lintent = new Intent(MainActivity.this, MyPasswordsSavePassword.class);
                 startActivities(new Intent[]{Lintent});
-                finish();
                 overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
             }
         });

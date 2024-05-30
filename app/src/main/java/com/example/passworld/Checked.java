@@ -1,8 +1,12 @@
 package com.example.passworld;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -17,6 +21,9 @@ import com.example.passworld.non.Passworddd;
 import com.example.passworld.non.PasswordddAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.time.LocalTime;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,6 +33,8 @@ public class Checked extends MainActivity {
     private DBManager dbManager;
     private TextView tvQuest;
     private Passworddd passworddd = new Passworddd();
+    private static final long DELAY = 60000; // таймер 1 минута
+    private static Timer timer;
     String[] question = {"1) Ваш пароль должен состоять как минимум из 8 символов","2) Ваш пароль должен содержать букву в верхнем регистре","3) Ваш пароль должен содержать хотя бы 1 символ","4) Ваш пароль должен содержать цифру",
     "5) Ваш пароль должен содержать Римскую цифру","6) Сумма цифр вашего пароль должна равняться - 31","7) Ваш пароль должен содержать хотя бы один символьный смайлик","8) Ваш пароль должен иметь хотя бы одну английскую букву",
     "9) Ваш пароль должен содержать ответ на загадку: \"Кто ходит сидя?\"","10) Для работы приложения требуется включенный вайфай!","11) Ваш пароль должен содержать название символа с кодом 0 из кодировки ASCII",
@@ -51,11 +60,44 @@ public class Checked extends MainActivity {
         return false;
     }
 
+    public static boolean isWifiEnable(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+
+        if (wifiManager != null) {
+            return wifiManager.isWifiEnabled();
+        }
+        return false;
+    }
+    public static boolean BatteryAbove50Percent(Context context) {
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = context.registerReceiver(null, ifilter);
+        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batteryPct = level / (float)scale;
+
+        return batteryPct > 0.5;
+    }
+    public static boolean LenghtKratno4(String text) {
+        return text.length() % 4 == 0;
+    }
+
+    String otvetZagadka = "шахматист";
+    String ASCIIquestion = "null";
+    String PODTVERZDAU = "подтверждаю";
+    boolean stopsleep = false;
+    boolean stopsleepcomplited = false;
+    String questionDa = "да";
+    String questionNet = "нет";
+    int countDigitsinQuestion18 = 0;
+    String[] wordsBankCode = {"USD", "EUR", "JPY", "GBP", "AUD", "RUB", "NZD", "BRL", "KZT", "SGD", "CNY"};
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Bundle arguments = getIntent().getExtras();
+        Context contex = null;
 
         if(arguments!=null){
             passworddd = (Passworddd) arguments.getSerializable(Passworddd.class.getSimpleName());
@@ -96,7 +138,6 @@ public class Checked extends MainActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 passworddd.setTextpassword(password.getText().toString());
-
                 boolean has8sumbol = false;
                 boolean hasUppercase = false;
                 boolean hasChar = false;
@@ -108,7 +149,7 @@ public class Checked extends MainActivity {
                 boolean hasPuzzle = false;
                 boolean hasWiFi = false;
                 boolean hasASCII = false;
-                boolean hasVIRUS = false;
+                boolean hasVIRUS = false;                      //доделать
                 boolean hasSleep = false;
                 boolean hasPersentOfPhone = false;
                 boolean hasQuestion = false;
@@ -121,7 +162,7 @@ public class Checked extends MainActivity {
 
                 for (int i = 0; i < password.length(); i++) {
                     // Проверка на 8 символвов
-                    if (passworddd.getTextpassword().length() > 7){
+                    if (passworddd.getTextpassword().length() > 7) {
                         has8sumbol = true;
                         tvQuest.setText(question[1]);
                     }
@@ -138,7 +179,8 @@ public class Checked extends MainActivity {
                         tvQuest.setText(question[4]);
                     }
 
-                    if(isChar(passworddd.getTextpassword())) {
+                    //проверка на символ
+                    if (isChar(passworddd.getTextpassword())) {
                         hasChar = true;
                         tvQuest.setText(question[3]);
                     }
@@ -155,14 +197,118 @@ public class Checked extends MainActivity {
                         tvQuest.setText(question[6]);
                     }
 
-                    if (EnglishLetter(passworddd.getTextpassword())){
+                    //проверка на английскую букву
+                    if (EnglishLetter(passworddd.getTextpassword())) {
                         hasEnglish = true;
                         tvQuest.setText(question[8]);
                     }
+
+                    //проверка на правильный ответ на загадку
+                    if (passworddd.getTextpassword().toLowerCase().contains(otvetZagadka.toLowerCase())) {
+                        hasPuzzle = true;
+                        tvQuest.setText(question[9]);
+                    }
+
+                    //проврека на включенный вайфай
+                    if (isWifiEnable(contex)) {
+                        hasWiFi = true;
+                        tvQuest.setText(question[10]);
+                    }
+
+                    //проверка на наличие фразы null в пароле
+                    if (passworddd.getTextpassword().toLowerCase().contains(ASCIIquestion.toLowerCase())) {
+                        hasASCII = true;
+                        tvQuest.setText(question[11]);
+                    }
+
+                    //проверка на подтверждение получение вируса который удаляет символ
+                    if (passworddd.getTextpassword().toLowerCase().contains(PODTVERZDAU.toLowerCase())) {
+                        hasVIRUS = true;
+                        tvQuest.setText(question[12]);
+                    }
+
+                    //проверка на то что прошло время отдыха
+                    if (hasVIRUS == true & stopsleep == false) {
+                        timer = new Timer();
+                        TimerTask task = new TimerTask() {
+                            @Override
+                            public void run() {
+                                stopsleepcomplited = true;
+                            }
+                        };
+                        timer.schedule(task, 60000);
+
+                        if (stopsleepcomplited == true) {
+                            stopsleep = true;
+                            hasSleep = true;
+                            tvQuest.setText(question[13]);
+                        }
+                    }
+
+                    //проверка на более 50 процентов
+                    if (BatteryAbove50Percent(contex)) {
+                        hasPersentOfPhone = true;
+                        tvQuest.setText(question[14]);
+                    }
+
+                    //проверка что есть ответ да нет
+                    if (passworddd.getTextpassword().toLowerCase().contains(questionDa.toLowerCase()) || passworddd.toLowerCase().contains(questionNet.toLowerCase())) {
+                        hasQuestion = true;
+                        tvQuest.setText(question[15]);
+                    }
+
+                    //проверка что число символо кратно 4
+                    if (LenghtKratno4(passworddd.getTextpassword())) {
+                        hasSumbolKratno4 = true;
+                        tvQuest.setText(question[16]);
+                    }
+
+                    //проверка на то что присудствует текущее время телефона
+                    if (hasSumbolKratno4) {
+                        Pattern pattern = Pattern.compile("\\b\\d{2}:\\d{2}\\b");
+                        Matcher matcher = pattern.matcher(passworddd.getTextpassword());
+                        while (matcher.find()) {
+                            String match = matcher.group();
+                            LocalTime currentTime = LocalTime.now();
+                            LocalTime timeInString = LocalTime.parse(match);
+                            if (currentTime.equals(timeInString)) {
+                                hasCurrentTimee = true;
+                                tvQuest.setText(question[17]);
+                            }
+                        }
+                    }
+
+                    //счетчик чтобы выполнять проверку которая ниже(что число цифр нечетное)
+                    if (Character.isDigit(passworddd.getTextpassword().charAt(i))) {
+                        countDigitsinQuestion18++;
+                    }
+                    //проверка что количество цифр нечетно
+                    if (countDigitsinQuestion18 % 2 != 0) {
+                        hasCharNoChetni = true;
+                        tvQuest.setText(question[18]);
+                    }
+
+                    //провекра на наличие банковских кодов
+                    for(String word : wordsBankCode) {
+                        if(passworddd.getTextpassword().contains(word)) {
+                            hasRUB_EUR = true;
+                            tvQuest.setText(question[19]);
+                            break;
+                        }
+                    }
+
+                    //проверка на менее 50 символов (число может измениться)
+                    if (passworddd.getTextpassword().length() < 51){
+                       hasBigPassword = true;
+                       tvQuest.setText(question[20]);
+                    }
+
+                    //чтобы показало сообщение что ты прошел игру (я не уверен выведет ли оно последнее предложение из questions где я написал поздравляю что прошел игру)
                     if (passworddd.getTextpassword().length() > 100000000) {
                         hasUNREAL = true;
                     }
                 }
+                
                 if(passworddd.getTextpassword().equals(""))
                     tvQuest.setText(question[0]);
 
@@ -258,6 +404,7 @@ public class Checked extends MainActivity {
                                                     flags[11] = hasVIRUS;
 
                                                     if(hasVIRUS) {
+
                                                         flags[12] = hasSleep;
 
                                                         if(hasSleep) {
