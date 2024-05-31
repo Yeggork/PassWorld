@@ -88,7 +88,6 @@ public class Checked extends MainActivity {
     boolean stopsleepcomplited = false;
     String questionDa = "да";
     String questionNet = "нет";
-    int countDigitsinQuestion18 = 0;
     String[] wordsBankCode = {"USD", "EUR", "JPY", "GBP", "AUD", "RUB", "NZD", "BRL", "KZT", "SGD", "CNY"};
 
 
@@ -144,6 +143,7 @@ public class Checked extends MainActivity {
                 boolean hasDigit = false;
                 boolean hasRimInt = false;
                 int sumNumber = 0;
+                int countDigitsinQuestion18 = 0;
                 boolean hasSmiles = false;
                 boolean hasEnglish = false;
                 boolean hasPuzzle = false;
