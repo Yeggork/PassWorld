@@ -22,6 +22,7 @@ import com.example.passworld.non.PasswordddAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.time.LocalTime;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -86,6 +87,7 @@ public class Checked extends MainActivity {
     String PODTVERZDAU = "подтверждаю";
     boolean stopsleep = false;
     boolean stopsleepcomplited = false;
+    boolean vivivirus = false;
     String questionDa = "да";
     String questionNet = "нет";
     String[] wordsBankCode = {"USD", "EUR", "JPY", "GBP", "AUD", "RUB", "NZD", "BRL", "KZT", "SGD", "CNY"};
@@ -127,6 +129,22 @@ public class Checked extends MainActivity {
                 dbManager.deletePassword(password);
             }
         };
+
+        // каждые 30 секунд стираем букву
+        Timer timervirus = new Timer();
+        timervirus.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if(vivivirus == true) {
+                    int randomint = new Random().nextInt(passworddd.length());
+                    StringBuilder stringBuilder = new StringBuilder(String.valueOf(passworddd));
+                    stringBuilder.deleteCharAt(randomint);
+                    password.setText(stringBuilder);
+                }
+            }
+        }, 0,30000);
+
+
         password.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -159,6 +177,7 @@ public class Checked extends MainActivity {
                 boolean hasRUB_EUR = false;
                 boolean hasBigPassword = false;
                 boolean hasUNREAL = false;
+
 
                 for (int i = 0; i < password.length(); i++) {
                     // Проверка на 8 символвов
@@ -224,6 +243,7 @@ public class Checked extends MainActivity {
                     //проверка на подтверждение получение вируса который удаляет символ
                     if (passworddd.getTextpassword().toLowerCase().contains(PODTVERZDAU.toLowerCase())) {
                         hasVIRUS = true;
+                        vivivirus = true;
                         tvQuest.setText(question[12]);
                     }
 

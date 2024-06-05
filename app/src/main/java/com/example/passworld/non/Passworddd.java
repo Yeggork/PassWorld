@@ -45,4 +45,7 @@ public class Passworddd implements Serializable {
     public Collection<Object> toLowerCase() {
         return null;
     }
+
+    public int length() {
+    }
 }
