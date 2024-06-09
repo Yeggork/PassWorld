@@ -47,5 +47,10 @@ public class Passworddd implements Serializable {
     }
 
     public int length() {
+        return textpassword.length();
+    }
+
+    public char charAt(int i) {
+        return textpassword.charAt(i);
     }
 }

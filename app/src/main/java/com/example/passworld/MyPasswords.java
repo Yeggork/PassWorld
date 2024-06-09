@@ -37,10 +37,10 @@ public class MyPasswords extends AppCompatActivity {
         ImageView copy = view.findViewById(R.id.imageViewCopyPassword);
         copy.setOnClickListener(new View.OnClickListener() {                      //чтобы скопировать пароль сохраненный в "ваши пароли" в буфер обмена телефона
             @Override
-            public void onClick(View v) {
-                String coppiedText = textpasswordaKotoriSave.getText().toString();
-                ClipboardManager clipboard = (ClipboardManager)getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Copied Text",coppiedText);
+            public void onClick(View view) {
+                String coppiedtext = textpasswordaKotoriSave.getText().toString();
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("текст скопирован:", coppiedtext);
                 clipboard.setPrimaryClip(clip);
             }
         });                                                                        //чтобы скопировать пароль сохраненный в "ваши пароли" в буфер обмена телефона
@@ -58,11 +58,15 @@ public class MyPasswords extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                String continuePlaying = textpasswordaKotoriSave.getText().toString();
-                String OcurrentActivity = this.getLocalClassName();
-                Intent Ointent = new Intent(MyPasswords.this, Checked.class);
-                if (OcurrentActivity.equals("MyPasswords")) {                                          //переход к активности Checked
-                    startActivities(new Intent[]{Ointent});
+                String continueplayy = textpasswordaKotoriSave.getText().toString();
+                ClipboardManager clipboardd = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipp = ClipData.newPlainText("",continueplayy);
+                clipboardd.setPrimaryClip(clipp);
+                String AcurrentActivity = this.getLocalClassName();
+                Intent Aintent = new Intent(MyPasswords.this, Checked.class);
+                if (AcurrentActivity.equals("MyPasswords")) {//переход к активности Checked
+                    Aintent.putExtra("ТекстДляВставки",continueplayy);
+                    startActivities(new Intent[]{Aintent});
                     overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
                 }
                 //password.setText(continueplay.toString());                                             //вставка сохраненного пароля из "ваши мароли(MyPasswords) в окошко где вводишь пароль
