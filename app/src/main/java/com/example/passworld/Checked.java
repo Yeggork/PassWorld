@@ -5,12 +5,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,7 +21,6 @@ import com.example.passworld.non.Passworddd;
 import com.example.passworld.non.PasswordddAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -38,7 +37,7 @@ public class Checked extends MainActivity {
     private Passworddd passworddd = new Passworddd();
     private static final long DELAY = 60000; // таймер 1 минута
     private static Timer timer;
-    String[] question = {"1) Ваш пароль должен состоять как минимум из 8 символов", "2) Ваш пароль должен содержать букву в верхнем регистре", "3) Ваш пароль должен содержать хотя бы 1 спец символ", "4) Ваш пароль должен содержать цифру", "5) Ваш пароль должен содержать Римскую цифру", "6) Сумма цифр вашего пароль должна равняться - 31", "7) Ваш пароль должен содержать хотя бы один символьный смайлик", "8) Ваш пароль должен иметь хотя бы одну английскую букву", "9) Ваш пароль должен содержать ответ на загадку: \"Кто ходит сидя?\"", "10) любой символ вашего пароля не должен повторяться  более 3 раз! ", "11) Ваш пароль должен содержать название символа с кодом 0 из кодировки ASCII", "12) О нет! Ваш пароль поймал вирус! Из-за него каждые 20 секунд - удаляется рандомный символ! Чтобы подтвердить получение данной информации введите кодовое слово \"подтверждаю\"", "13) А теперь с осознание того что у тебя в пароле вирус, тебе стоит спокойно отдохнуть (подождите 1 минуту)", "14) Для работы приложения требуется больше заряда...", "15) Ответьте (да или нет) на вопрос: Вам более 18 лет?", "16) количество символов пароля должно быть кратно 4", "17) Ваш пароль должен содержать текущее время на вашем устройстве", "18) Количество цифр вашего пароля должно быть нечетным", "19) Ваш пароль должен содержать 3-ех символьный банковский код любой валюты", "20) Пароль слишком большой(((", "Поздравляю!!! Вы создали надежный пароль который никто никогда не угадает.Не забудьте сохранить его!"};
+    String[] question = {"1) Ваш пароль должен состоять как минимум из 8 символов", "2) Ваш пароль должен содержать букву в верхнем регистре", "3) Ваш пароль должен содержать хотя бы 1 спец символ", "4) Ваш пароль должен содержать цифру", "5) Ваш пароль должен содержать Римскую цифру", "6) Сумма цифр вашего пароль должна равняться - 31", "7) Ваш пароль должен содержать хотя бы один символьный смайлик", "8) Ваш пароль должен иметь хотя бы одну английскую букву", "9) Ваш пароль должен содержать ответ на загадку: \"Кто ходит сидя?\"", "10) любой символ вашего пароля не должен повторяться  более 3 раз! ", "11) Ваш пароль должен содержать название символа с кодом 0 из кодировки ASCII", "12) О нет! Ваш пароль поймал вирус! Из-за него каждые 30 секунд - удаляется рандомный символ! Чтобы подтвердить получение данной информации введите кодовое слово \"подтвердить\"", "13) А теперь с осознание того что у тебя в пароле вирус, тебе стоит спокойно отдохнуть (подождите 1,5 минуты НИЧЕГО НЕ ДЕЛАЯ (даже не смотря на пропажу символов))", "14) Для работы приложения требуется больше заряда...", "15) Ответьте (да или нет) на вопрос: Вам более 18 лет?", "16) количество символов пароля должно быть кратно 4", "17) Для предотвращения утечки данных пароля мошенникам - сделайте что-то", "18) Количество цифр вашего пароля должно быть нечетным", "19) Ваш пароль должен содержать 3-ех символьный банковский код любой валюты", "20) Пароль слишком большой(((", "Поздравляю!!! Вы создали надежный пароль который никто никогда не угадает.Не забудьте сохранить его!"};
 
     // Логика проверки на заглавную букву
     private boolean isUpperCase(char ch) {
@@ -51,16 +50,6 @@ public class Checked extends MainActivity {
     }
 
 
-    public static boolean isWifiEnable(Context context) {
-        if (context == null) {
-            return false;
-        }
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager != null) {
-            return wifiManager.isWifiEnabled();
-        }
-        return false;
-    }
 
     public boolean BatteryAbove50Percent(Context context) {
         if (context == null) {
@@ -79,16 +68,15 @@ public class Checked extends MainActivity {
         return batteryPct > 0.5;
     }
 
-    public static boolean LenghtKratno4(String text) {
-        return text.length() % 4 == 0;
-    }
-
     String otvetZagadka = "шахматист";
     String ASCIIquestion = "null";
-    String PODTVERZDAU = "подтверждаю";
+    String PODTVERZDAU = "подтвердить";
     boolean stopsleep = false;
     boolean stopsleepcomplited = false;
     boolean vivivirus = false;
+    boolean nado = false;
+    int countdeletee = 0;
+    String ural56 = "f3sp";
     String questionDa = "да";
     String questionNet = "нет";
     String[] wordsBankCode = {"USD", "EUR", "JPY", "GBP", "AUD", "RUB", "NZD", "BRL", "KZT", "SGD", "CNY"};
@@ -101,6 +89,7 @@ public class Checked extends MainActivity {
         setContentView(R.layout.activity_main);
         Bundle arguments = getIntent().getExtras();
         Context contex = null;
+        InternetChecker checker = new InternetChecker();
 
         Intent Aintent = getIntent();
         if (Aintent.hasExtra("ТекстДляВставки")) {
@@ -149,7 +138,7 @@ public class Checked extends MainActivity {
                     password.setText(stringBuilder);
                 }
             }
-        }, 0, 20000);
+        }, 0, 30000);
 
 
         password.addTextChangedListener(new TextWatcher() {
@@ -171,13 +160,13 @@ public class Checked extends MainActivity {
                 boolean hasRimInt = false;
                 int sumNumber = 0;
                 int countDigitsinQuestion18 = 0;
+                int countSumbolVStrokeDly16 = 0;
                 boolean hasSmiles = false;
                 boolean hasEnglish = false;
                 boolean hasPuzzle = false;
-                boolean has3kratpovtorenie = false;
+                boolean hasWiFi = false;
                 boolean hasASCII = false;
                 boolean hasVIRUS = false;
-                boolean hasSleep = false;
                 boolean hasPersentOfPhone = false;
                 boolean hasQuestion = false;
                 boolean hasSumbolKratno4 = false;
@@ -186,6 +175,7 @@ public class Checked extends MainActivity {
                 boolean hasRUB_EUR = false;
                 boolean hasBigPassword = false;
                 boolean hasUNREAL = false;
+                boolean hasSleep = false;
                 Map<Character, Integer> charCountMap = new HashMap<>();
 
 
@@ -242,17 +232,22 @@ public class Checked extends MainActivity {
                         tvQuest.setText(question[9]);
                     }
 
-                    //проврека на повторяющуюся букву
+                  //  boolean hasWifiEnable = checker.isWifiActive(contex);;
+                 //   if (hasWifiEnable) {
+                 //       hasWiFi = true;
+                 //       tvQuest.setText(question[10]);
+                 //   }
+                     //проврека на повторяющуюся букву
                     if (charCountMap.containsKey(c)) {
                         int count = charCountMap.get(c);
                         if (count <= 3) {
-                            has3kratpovtorenie = true;
+                            hasWiFi = true;
                             tvQuest.setText(question[10]);
                         } else {
                             charCountMap.put(c, count + 1);
-                        }
+                       }
                     } else {
-                        charCountMap.put(c, 1);
+                       charCountMap.put(c, 1);
                     }
 
 
@@ -270,7 +265,7 @@ public class Checked extends MainActivity {
                     }
 
                     //проверка на то что прошло время отдыха
-                    if (hasVIRUS == true && stopsleep == false) {
+                    if (passworddd.getTextpassword().toLowerCase().contains(ural56.toLowerCase()) || hasVIRUS == true && stopsleep == false) {
                         timer = new Timer();
                         TimerTask task = new TimerTask() {
                             @Override
@@ -279,12 +274,12 @@ public class Checked extends MainActivity {
                             }
                         };
                         timer.schedule(task, 60000);
-
-                        if (stopsleepcomplited) {
-                            stopsleep = true;
-                            hasSleep = true;
-                            tvQuest.setText(question[13]);
-                        }
+                        stopsleep = true;
+                    }
+                    if (stopsleepcomplited) {
+                        stopsleep = true;
+                        hasSleep = true;
+                        tvQuest.setText(question[13]);
                     }
 
                     //проверка на более 50 процентов
@@ -294,29 +289,41 @@ public class Checked extends MainActivity {
                     }
 
                     //проверка что есть ответ да нет
-                    if ((passworddd != null && passworddd.getTextpassword() != null && passworddd.getTextpassword().toString().toLowerCase().contains(questionNet.toLowerCase()))) {
+                    if ((passworddd != null && passworddd.getTextpassword().toString().toLowerCase().contains(questionDa.toLowerCase()) || passworddd.getTextpassword().toString().toLowerCase().contains(questionNet.toLowerCase()))) {
                         hasQuestion = true;
                         tvQuest.setText(question[15]);
                     }
 
                     //проверка что число символо кратно 4
-                    if (LenghtKratno4(passworddd.getTextpassword())) {
+                    countSumbolVStrokeDly16 = passworddd.length();
+                    if (countSumbolVStrokeDly16 % 4 == 0) {
                         hasSumbolKratno4 = true;
                         tvQuest.setText(question[16]);
                     }
 
-                    //проверка на то что присудствует текущее время телефона
-                    if (hasSumbolKratno4) {
-                        Pattern pattern = Pattern.compile("\\b\\d{2}:\\d{2}\\b");
-                        Matcher matcher = pattern.matcher(passworddd.getTextpassword());
-                        while (matcher.find()) {
-                            String match = matcher.group();
-                            LocalTime currentTime = LocalTime.now();
-                            LocalTime timeInString = LocalTime.parse(match);
-                            if (currentTime.equals(timeInString)) {
-                                hasCurrentTimee = true;
-                                tvQuest.setText(question[17]);
+                    //проверка на то что чтото уже сделали
+
+                    if (hasSumbolKratno4 = true) {
+                        password.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
                             }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                                nado = true;
+                            }
+                        });
+                        if(nado){
+                            hasCurrentTimee = true;
+                            tvQuest.setText(question[17]);
+
                         }
                     }
 
@@ -359,13 +366,13 @@ public class Checked extends MainActivity {
                 tvQuest.setText(question[7]);
 
                 // Обновление флагов в зависимости от условий пароля
-                updateFlags(has8sumbol, hasUppercase, hasChar, hasDigit, hasRimInt, sumNumber, hasSmiles, hasEnglish, hasPuzzle, has3kratpovtorenie, hasASCII, hasVIRUS, hasSleep, hasPersentOfPhone, hasQuestion, hasSumbolKratno4, hasCurrentTimee, hasCharNoChetni, hasRUB_EUR, hasBigPassword, hasUNREAL);
+                updateFlags(has8sumbol, hasUppercase, hasChar, hasDigit, hasRimInt, sumNumber, hasSmiles, hasEnglish, hasPuzzle, hasWiFi, hasASCII, hasVIRUS, hasSleep, hasPersentOfPhone, hasQuestion, hasSumbolKratno4, hasCurrentTimee, hasCharNoChetni, hasRUB_EUR, hasBigPassword, hasUNREAL);
             }
         });
     }
 
     // Метод для обновления флагов в зависимости от условий пароля
-    private void updateFlags(boolean has8sumbol, boolean hasUppercase, boolean hasChar, boolean hasDigit, boolean hasRimInt, int sumNumber, boolean hasSmiles, boolean hasEnglish, boolean hasPuzzle, boolean has3kratpovtorenie, boolean hasASCII, boolean hasVIRUS, boolean hasSleep, boolean hasPersentOfPhone, boolean hasQuestion, boolean hasSumbolKratno4, boolean hasCurrentTimee, boolean hasCharNoChetni, boolean hasRUB_EUR, boolean hasBigPassword, boolean hasUNREAL) {
+    private void updateFlags(boolean has8sumbol, boolean hasUppercase, boolean hasChar, boolean hasDigit, boolean hasRimInt, int sumNumber, boolean hasSmiles, boolean hasEnglish, boolean hasPuzzle, boolean hasWiFi, boolean hasASCII, boolean hasVIRUS, boolean hasSleep, boolean hasPersentOfPhone, boolean hasQuestion, boolean hasSumbolKratno4, boolean hasCurrentTimee, boolean hasCharNoChetni, boolean hasRUB_EUR, boolean hasBigPassword, boolean hasUNREAL) {
         flags[0] = has8sumbol;
         if (!hasUNREAL) tvQuest.setText(question[20]);
         if (!hasBigPassword) tvQuest.setText(question[19]);
@@ -378,7 +385,7 @@ public class Checked extends MainActivity {
         if (!hasSleep) tvQuest.setText(question[12]);
         if (!hasVIRUS) tvQuest.setText(question[11]);
         if (!hasASCII) tvQuest.setText(question[10]);
-        if (!has3kratpovtorenie) tvQuest.setText(question[9]);
+        if (!hasWiFi) tvQuest.setText(question[9]);
         if (!hasPuzzle) tvQuest.setText(question[8]);
         if (!hasEnglish) tvQuest.setText(question[7]);
         if (!hasSmiles) tvQuest.setText(question[6]);
@@ -415,9 +422,9 @@ public class Checked extends MainActivity {
                                         flags[8] = hasPuzzle;
 
                                         if (hasPuzzle) {
-                                            flags[9] = has3kratpovtorenie;
+                                            flags[9] = hasWiFi;
 
-                                            if (has3kratpovtorenie) {
+                                            if (hasWiFi) {
                                                 flags[10] = hasASCII;
 
                                                 if (hasASCII) {
