@@ -19,16 +19,29 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
     private final LayoutInflater inflater;
     private List<Passworddd> passworddds;
     private final OnDeleteClickListener onDeleteClickListener;
+    private final OnCopyClickListener onCopyClickListener;
+    private final OnPlayClickListener onPlayClickListener;
 
-
+    public interface OnCopyClickListener {
+        void onCopyClick(Passworddd password, int position);
+    }
     public interface OnDeleteClickListener{
         void onDeleteClick(Passworddd password, int position);
     }
+    public interface OnPlayClickListener{
+        void onPlayClick(Passworddd password, int position);
+    }
 
-    public PasswordddAdapter(Context context,List<Passworddd> passworddds, OnDeleteClickListener onDeleteClickListener){
+    public PasswordddAdapter(Context context,
+                             List<Passworddd> passworddds,
+                             OnDeleteClickListener onDeleteClickListener,
+                             OnCopyClickListener onCopyClickListener,
+                             OnPlayClickListener onPlayClickListener){
         this.passworddds = passworddds;
         inflater = LayoutInflater.from(context);
         this.onDeleteClickListener = onDeleteClickListener;
+        this.onCopyClickListener = onCopyClickListener;
+        this.onPlayClickListener = onPlayClickListener;
     }
     @NonNull
     @Override
@@ -51,6 +64,12 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
             passworddds.remove(password);
             notifyItemRemoved(holder.getAdapterPosition());
         });
+        holder.copy.setOnClickListener(v -> {
+            onCopyClickListener.onCopyClick(password,position);
+        });
+        holder.play.setOnClickListener(v -> {
+            onPlayClickListener.onPlayClick(password,position);
+        });
     }
 
     @Override
@@ -59,7 +78,7 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView delete, copy;
+        ImageView delete, copy,play;
         TextView textpas, idpas;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
@@ -67,6 +86,7 @@ public class PasswordddAdapter extends RecyclerView.Adapter<PasswordddAdapter.Vi
             textpas = itemView.findViewById(R.id.TextViewPasswordSavedInDataBase);
             delete = itemView.findViewById(R.id.imageViewDeletePassword);
             copy = itemView.findViewById(R.id.imageViewCopyPassword);
+            play = itemView.findViewById(R.id.imageViewContinuePlay);
         }
     }
 }
