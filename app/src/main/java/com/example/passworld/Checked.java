@@ -344,7 +344,6 @@ public class Checked extends MainActivity {
                         if (passworddd.getTextpassword().contains(word)) {
                             hasRUB_EUR = true;
                             tvQuest.setText(question[19]);
-                            break;
                         }
                     }
 
