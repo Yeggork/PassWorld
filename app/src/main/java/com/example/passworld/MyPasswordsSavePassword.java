@@ -25,18 +25,11 @@ import com.example.passworld.non.PasswordddAdapter;
 
 public class MyPasswordsSavePassword extends AppCompatActivity {
     DBManager dbManager;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_passwors);
-
-        TextView textpasswordaKotoriSave = null;                                                             //скопировал из MyPasswordds
-        textpasswordaKotoriSave.findViewById(R.id.TextViewPasswordSavedInDataBase);                                   //скопировал из MyPasswordds
-        View view = null;                                                                                  //скопировал из MyPasswords
-        ImageView copy = view.findViewById(R.id.imageViewCopyPassword);                                   //скопировал из MyPasswordds
-
-
-
         dbManager = new DBManager(this);
         dbManager.openDb();
         RecyclerView recyclerView = findViewById(R.id.recyclerViewPasswords);
@@ -46,55 +39,35 @@ public class MyPasswordsSavePassword extends AppCompatActivity {
                 dbManager.deletePassword(passworddd);
             }
         };
-        Toast.makeText(this,dbManager.getPasswords().size()+"",Toast.LENGTH_SHORT).show();
-        PasswordddAdapter adapter = new PasswordddAdapter(this,dbManager.getPasswords(),onDeleteClickListener);
-        recyclerView.setAdapter(adapter);
-
-
-
-                        // Далее все что будет я скопировал из MyPasswordds
-
-
-
-        copy.setOnClickListener(new View.OnClickListener() {                      //чтобы скопировать пароль сохраненный в "ваши пароли" в буфер обмена телефона
+        PasswordddAdapter.OnCopyClickListener onCopyClickListener = new PasswordddAdapter.OnCopyClickListener() {
             @Override
-            public void onClick(View view) {
-                String coppiedtext = textpasswordaKotoriSave.getText().toString();
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("текст скопирован:", coppiedtext);
-                clipboard.setPrimaryClip(clip);
-           }
-        });                                                                        //чтобы скопировать пароль сохраненный в "ваши пароли" в буфер обмена телефона
-        ImageView continueplay = view.findViewById(R.id.imageViewContinuePlay);
-        continueplay.setOnClickListener(new View.OnClickListener() {               //чтобы перейти обратно к игре и чтобы пароль сразу вставился в окошко с ним и игра продолжалась
-            private String localClassName;
-
-            public void setLocalClassName(String localClassName) {
-                this.localClassName = localClassName;
+            public void onCopyClick(Passworddd password, int position) {
+                clipText(password);
             }
-
-            public String getLocalClassName() {
-                return localClassName;
-            }
-
+        };
+        PasswordddAdapter.OnPlayClickListener onPlayClickListener = new PasswordddAdapter.OnPlayClickListener() {
             @Override
-            public void onClick(View v) {
-                String continueplayy = textpasswordaKotoriSave.getText().toString();
-                ClipboardManager clipboardd = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipp = ClipData.newPlainText("",continueplayy);
-                clipboardd.setPrimaryClip(clipp);
-                String AcurrentActivity = this.getLocalClassName();
+            public void onPlayClick(Passworddd password, int position) {
+                String continueplayy = clipText(password);
                 Intent Aintent = new Intent(MyPasswordsSavePassword.this, Checked.class);
-                if (AcurrentActivity.equals("MyPasswordsSavePassword")) {//переход к активности Checked
-                    Aintent.putExtra("ТекстДляВставки",continueplayy);
-                    startActivities(new Intent[]{Aintent});
-                    overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
-                }
-                //password.setText(continueplay.toString());                                             //вставка сохраненного пароля из "ваши мароли(MyPasswords) в окошко где вводишь пароль
-
+                Aintent.putExtra("ТекстДляВставки", continueplayy);
+                startActivity(Aintent);
+                overridePendingTransition(R.anim.slide_in_down, R.anim.slide_out_down);
             }
-        });
+        };
+        Toast.makeText(this, dbManager.getPasswords().size() + "", Toast.LENGTH_SHORT).show();
+        PasswordddAdapter adapter = new PasswordddAdapter(this, dbManager.getPasswords(), onDeleteClickListener, onCopyClickListener, onPlayClickListener);
+        recyclerView.setAdapter(adapter);
     }
+
+    public String clipText(Passworddd passworddd) {
+        String coppiedtext = passworddd.getTextpassword();
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("текст скопирован:", coppiedtext);
+        clipboard.setPrimaryClip(clip);
+        return coppiedtext;
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

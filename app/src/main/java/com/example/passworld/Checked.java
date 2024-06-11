@@ -88,13 +88,15 @@ public class Checked extends MainActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Bundle arguments = getIntent().getExtras();
+        password = findViewById(R.id.editTextPassword);
         Context contex = null;
         InternetChecker checker = new InternetChecker();
 
         Intent Aintent = getIntent();
         if (Aintent.hasExtra("ТекстДляВставки")) {
             String textToPaste = Aintent.getStringExtra("ТекстДляВставки");
-            password.setText(textToPaste);
+            passworddd.setTextpassword(textToPaste);
+            password.setText(passworddd.getTextpassword());
         }
 
         if (arguments != null) {
@@ -103,7 +105,6 @@ public class Checked extends MainActivity {
         dbManager = new DBManager(this);
         dbManager.openDb();
 
-        password = findViewById(R.id.editTextPassword);
         FloatingActionButton actionButton = findViewById(R.id.actionButtonSavePas);
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,6 +153,9 @@ public class Checked extends MainActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if (passworddd == null) {
+                    passworddd = new Passworddd();
+                }
                 passworddd.setTextpassword(password.getText().toString());
                 boolean has8sumbol = false;
                 boolean hasUppercase = false;
@@ -342,7 +346,6 @@ public class Checked extends MainActivity {
                         if (passworddd.getTextpassword().contains(word)) {
                             hasRUB_EUR = true;
                             tvQuest.setText(question[19]);
-                            break;
                         }
                     }
 
